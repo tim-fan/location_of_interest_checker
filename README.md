@@ -12,6 +12,10 @@ The script produces a map plot (as shown below) as well `.csv` file for further 
 
 *NOTE* see [health.govt.nz](https://www.health.govt.nz/our-work/diseases-and-conditions/covid-19-novel-coronavirus/covid-19-health-advice-public/contact-tracing-covid-19/covid-19-contact-tracing-locations-interest) for the official list of locations of interest, and guidance on what to do if you have been at one.
 
+## Disclaimer!
+
+I do not recommend the use of this script in lieu of manual checking of travel history against locations of interest. This script is largely untested, and further I am unsure as to whether Google location history records come with sufficient accuracy and frequency to reliably determine proximity to a location of interest.
+
 ## Usage
 
 ### Export Google location history
