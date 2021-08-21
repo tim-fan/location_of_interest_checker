@@ -5,6 +5,7 @@ Script to compare COVID locations of interest to Google location history.
 ![distance to locations](./doc/distances_to_locations.png)
 **Figure:** Output of checker script, visualised in Excel. Column `distance_to_location_km` shows how far in km you were from the given location of interest.
 
+*NOTE* see [health.govt.nz](https://www.health.govt.nz/our-work/diseases-and-conditions/covid-19-novel-coronavirus/covid-19-health-advice-public/contact-tracing-covid-19/covid-19-contact-tracing-locations-interest) for the official list of locations of interest, and guidance on what to do if you have been at one.
 
 ## Usage
 
@@ -28,7 +29,7 @@ pip install git+https://github.com/tim-fan/location_of_interest_checker.git
 ### Run 
 
 Run the checker script. See the `-h` flag for usage. 
-```bash
+```text
 $ location_of_interest_checker -h
 Locations of Interest Checker.
 
