@@ -22,7 +22,7 @@ The script produces a map plot (as shown below) as well `.csv` file for further 
 
 ### Install
 
-To install this package into a virtualenv:
+To install this package/script into a virtualenv:
 
 ```bash
 python -m venv venv
