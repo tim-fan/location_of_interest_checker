@@ -75,7 +75,7 @@ See the column `distance_to_location_km` to see how close you were to the locati
     * Better hover text
     * Add a legend
     * Color lines by distance
-    * WWidgets for filtering by distance, time etc.
+    * Widgets for filtering by distance, time etc.
 * Look into connecting directly to Google API to extract location history, rather than requiring manual export.
 * Better configurability:
     * support different timezones? Different source datasets?
