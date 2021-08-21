@@ -21,7 +21,7 @@ To install this package into a virtualenv:
 
 ```bash
 python -m venv venv
-sourve venv/bin/activate
+source venv/bin/activate
 pip install git+https://github.com/tim-fan/location_of_interest_checker.git
 ```
 
