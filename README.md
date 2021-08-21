@@ -2,8 +2,13 @@
 
 Script to compare COVID locations of interest to Google location history.
 
+The script produces a map plot (as shown below) as well `.csv` file for further inspection of the data.
+
+![locations_of_interest_map](./doc/locations_of_interest_map.png)
+**Figure:** Output plot from checker script. Orange points are locations of interest, green points are personal locations at corresponding times. Blue lines show the 10 locations of interest you were closest to.
+
 ![distance to locations](./doc/distances_to_locations.png)
-**Figure:** Output of checker script, visualised in Excel. Column `distance_to_location_km` shows how far in km you were from the given location of interest.
+**Figure:** Output `.csv` checker script, visualised in Excel. Column `distance_to_location_km` shows how far in km you were from the given location of interest.
 
 *NOTE* see [health.govt.nz](https://www.health.govt.nz/our-work/diseases-and-conditions/covid-19-novel-coronavirus/covid-19-health-advice-public/contact-tracing-covid-19/covid-19-contact-tracing-locations-interest) for the official list of locations of interest, and guidance on what to do if you have been at one.
 
@@ -59,3 +64,19 @@ location_of_interest_checker Location\ History.json /tmp/results.csv
 On completion, the file `/tmp/results.csv` can be opened in Excel or similar tools for inspection.
 
 See the column `distance_to_location_km` to see how close you were to the locations of interest.
+
+
+## TODO
+
+* Think about packaging/distribution so this can easily be used by non-python users
+* Improvements to the plot: 
+    * Better show the association between history points and interest points
+    * Better hover text
+    * Add a legend
+    * Color lines by distance
+    * WWidgets for filtering by distance, time etc.
+* Look into connecting directly to Google API to extract location history, rather than requiring manual export.
+* Better configurability:
+    * support different timezones? Different source datasets?
+    * support different filtering start-times
+    * flags to enable/disable plotting and .csv export

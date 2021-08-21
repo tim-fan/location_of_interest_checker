@@ -12,6 +12,7 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [ 
     'docopt',
+    'ijson',
     'pandas',
     'plotly',
     'geopandas',
