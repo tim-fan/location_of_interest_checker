@@ -1,7 +1,19 @@
 """Locations of Interest Checker.
 
+Check current New Zealand COVID locations of interest against exported Google location history.
+
+Input arguments are the path to the exported location history json, and the file underwhich
+to save the results of the check.
+
+The output csv contains a list of all locations of interest, along with a column specifying how
+far (in km) you were from that location at that time. If any distances are less
+than, say 0.1km, you should probably get a test and self isolate!
+
+See https://www.health.govt.nz/our-work/diseases-and-conditions/covid-19-novel-coronavirus/covid-19-health-advice-public/contact-tracing-covid-19/covid-19-contact-tracing-locations-interest
+for official list of locations of interest, and instructions on what to do if you have been at one.
+
 Usage:
-  location_of_interest_checker <locations_of_interest_file> <location_history_file> <output_csv>
+  location_of_interest_checker <location_history_file> <output_csv>
 
 Options:
   -h --help     Show this screen.
@@ -22,28 +34,21 @@ import plotly.express as px
 
 def read_location_history_file(filename:str):
 
-    # saving locations in a temp file for faster loading
-    # during development
-    from_cache = True
+    with open(filename, "r") as f:
+        json_data = json.load(f)
+    
+    locations = pd.DataFrame(json_data['locations'])
+    locations.timestampMs = pd.to_numeric(locations.timestampMs)
 
-    if not from_cache:
-        with open(filename, "r") as f:
-            json_data = json.load(f)
-        
-        locations = pd.DataFrame(json_data['locations'])
-        locations.timestampMs = pd.to_numeric(locations.timestampMs)
+    # use simple time threshold to get rid of old data, for faster processing
+    # used https://www.epochconverter.com/ to get the threshold timstamp
+    # TODO: support user input of threshold time
+    treshold_timestamp_ms = 1624241116000
+    locations = locations.loc[locations.timestampMs > 1624241116000, :]
 
-        # use simple time threshold to get rid of old data, for faster processing
-        # used https://www.epochconverter.com/ to get the threshold timstamp
-        # TODO: support user input of threshold time
-        treshold_timestamp_ms = 1624241116000
-        locations = locations.loc[locations.timestampMs > 1624241116000, :]
-
-        # manual caching during development:
-        locations.to_csv("/tmp/locations_cache.csv")
-
-    else:
-        locations = pd.read_csv("/tmp/locations_cache.csv", index_col=None)
+    # # manual caching during development:
+    # locations.to_csv("/tmp/locations_cache.csv")
+    # locations = pd.read_csv("/tmp/locations_cache.csv", index_col=None)
 
     # get datetime from timestamps
     locations['time'] = locations.timestampMs.apply(lambda t: datetime.fromtimestamp(t*1e-3))
