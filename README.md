@@ -81,6 +81,9 @@ See the column `distance_to_location_km` to see how close you were to the locati
     * Color lines by distance
     * Widgets for filtering by distance, time etc.
 * Look into connecting directly to Google API to extract location history, rather than requiring manual export.
+* Add a flag to match to closest location record (in time) in cases where no location history is present within the timebounds
+  of a given location of interest
+    * alternatively, specify a maximum association time (e.g. match to records up to 1hr outside event interval)?
 * Better configurability:
     * support different timezones? Different source datasets?
     * support different filtering start-times
