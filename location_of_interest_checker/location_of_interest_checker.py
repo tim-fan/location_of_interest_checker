@@ -107,12 +107,6 @@ def parse_locations_of_interest_time_str(time_str:str) -> datetime:
     """
     return datetime.strptime(time_str, '%d/%m/%Y, %I:%M %p')
 
-def get_location_at_time(time: datetime, location_history:geopandas.GeoDataFrame):
-    """
-    Return current location at the given time
-    """
-    nearest_time_in_history_index = np.argmin(np.abs(location_history.time - time))
-    return location_history.geometry[nearest_time_in_history_index]
 
 def point_to_point_distance(p1:Point, p2: Point) -> float:
     """
@@ -125,23 +119,32 @@ def get_distance_to_location_of_interest(location_of_interest:pd.Series, locatio
 
     locations_in_window_indices = (location_history.time > location_of_interest.Start) & (location_history.time < location_of_interest.End)
     if not locations_in_window_indices.any():
-        # if no location data available for the window of interest, just use the closest (in time) record from location history
-        # to find distance
-        interval_center = location_of_interest.Start + (location_of_interest.End - location_of_interest.Start)/2
-        nearest_time_in_history_index = np.argmin(np.abs(location_history.time - interval_center))
-        locations_in_window = location_history.iloc[[nearest_time_in_history_index],:]
+        # if no location data available for the window of interest
+        # print a warning and return nan distance
+
+        print("Warning! no records found in location history at time of event - please check manually!")
+        print_location_of_interest(location_of_interest)
+        print()
+        matching_location_history = pd.Series(dict(
+            location_history_record_time= pd.to_datetime("nat"),
+            distance_to_location_km= float('nan'),
+            personal_lat=float('nan'),
+            personal_lon=float('nan'),
+            comment="No matching records found in location history",
+        ))
+
     else:
         locations_in_window = location_history.loc[locations_in_window_indices,:]
 
+        locations_in_window["distance_to_location_km"] = locations_in_window.apply(lambda location : point_to_point_distance(location.geometry, location_of_interest.geometry), axis=1 )
 
-    locations_in_window["distance_to_location_km"] = locations_in_window.apply(lambda location : point_to_point_distance(location.geometry, location_of_interest.geometry), axis=1 )
-
-    matching_location_history = locations_in_window.iloc[np.argmin(locations_in_window.distance_to_location_km), :]
-    matching_location_history = matching_location_history[["time", "distance_to_location_km", "lat", "lon"]].rename(dict(
-        time="location_history_record_time",
-        lat="personal_lat",
-        lon="personal_lon",
-    ))
+        matching_location_history = locations_in_window.iloc[np.argmin(locations_in_window.distance_to_location_km), :]
+        matching_location_history = matching_location_history[["time", "distance_to_location_km", "lat", "lon"]].rename(dict(
+            time="location_history_record_time",
+            lat="personal_lat",
+            lon="personal_lon",
+        ))
+        matching_location_history["comment"] = f"{locations_in_window_indices.sum()} matching records found in location history"
 
     return pd.concat([pd.Series(location_of_interest), pd.Series(matching_location_history)])
 
@@ -177,6 +180,26 @@ def plot_locations(locations_of_interest:geopandas.GeoDataFrame, location_histor
     # fig.write_html("./locations_of_interest.html")
     fig.show()
 
+def print_location_of_interest(location:pd.Series):
+    print(f"Event: {location.Event}\n"
+          f"Time frame: {location.Start} to {location.End}")
+
+def print_processing_report(locations_of_interest:geopandas.GeoDataFrame, location_history:geopandas.GeoDataFrame):
+    num_matched_locations = (~locations_of_interest.distance_to_location_km.isna()).sum()
+    num_unmatched_locations = (locations_of_interest.distance_to_location_km.isna()).sum()
+    print()
+    print()
+    print(f"Matched {num_matched_locations} locations of interest to location history (out of {len(locations_of_interest.index)} total locations).")
+    if num_unmatched_locations > 0:
+        print(f"Warning: was unable to find personal location data for {num_unmatched_locations} locations of interest - please check these locations manually!")
+    print()
+    if num_matched_locations > 0:
+        closest_location_of_interest = locations_of_interest.loc[np.argmin(locations_of_interest.distance_to_location_km)]
+        print("Closest location of interest:")
+        print_location_of_interest(closest_location_of_interest)
+        print(f"You were {closest_location_of_interest.distance_to_location_km} km away.")
+        print()
+
 def main():
     arguments = docopt(__doc__)
 
@@ -193,13 +216,16 @@ def main():
     # compute distance to locations of interest
     locations_of_interest = locations_of_interest.apply(lambda location: get_distance_to_location_of_interest(location, location_history),axis=1)
 
+    # print a summary
+    print_processing_report(locations_of_interest, location_history)
+
     # write results
-    locations_of_interest.sort_values(by="distance_to_location_km").to_csv(arguments['<output_csv>'], index=False)
+    output_csv = arguments['<output_csv>']
+    locations_of_interest.sort_values(by="distance_to_location_km").to_csv(output_csv, index=False)
+    print(f"Annotated location of interest data writen to file {output_csv}")
 
     # plot
     plot_locations(locations_of_interest, location_history)
-
-    print("done")
 
 
 
