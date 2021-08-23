@@ -75,6 +75,7 @@ See the column `distance_to_location_km` to see how close you were to the locati
 * Think about packaging/distribution so this can easily be used by non-python users
 * Provide instructions for windows setup - looks like this may be difficult with geopandas+pip: https://geopandas.readthedocs.io/en/latest/getting_started/install.html
 * Improvements to the plot: 
+    * More emphasis on high-proximity locations - currently it's easy to miss locations you were very close to, as the line will be very short - this is the oposite of how it should be!
     * Better show the association between history points and interest points
     * Better hover text
     * Add a legend
