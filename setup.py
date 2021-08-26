@@ -36,6 +36,7 @@ setup(
         'Programming Language :: Python :: 3.8',
     ],
     description="Compare Google location history to COVID locations of interest",
+    setup_requires=['wheel'],
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,
